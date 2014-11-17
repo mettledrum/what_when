@@ -17,7 +17,7 @@ class Organizer
 		update_time_zone_info(time_zone_name)
 	end
 
-	def update_time_zone_info(time_zone_name)
+	def update_time_zone(time_zone_name)
 		@tz = TZInfo::Timezone.get(time_zone_name)
 		@tz_name = time_zone_name
 	end
@@ -41,15 +41,20 @@ class Organizer
 
 	# user-readable message list
 	# TODO: display the rank for deletion ease
-	def view_all_msgs
-		pretify_msgs(all_msgs)
+	def view_all_msgs_with_rank
+		add_rank(pretify_msgs(all_msgs))
 	end
 
-	# TODO
-	def delete_by_rank
+	def delete_by_rank(rank)
+		# TODO: validate within range
+		@rc.zremrangebyrank(@name, rank-1, rank-1)
 	end
 
 private
+
+	def add_rank(msgs)
+		msgs.map.with_index { |msg, i| "#{i+1}) #{msg}" }
+	end
 
 	def insert_into_redis(utc_time, json_string)
 		# zset score is the epoch in secs
