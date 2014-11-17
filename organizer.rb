@@ -14,7 +14,7 @@ class Organizer
 	def initialize(redis_cli, set_name, time_zone_name="UTC")
 		@rc = redis_cli
 		@name = set_name
-		update_time_zone_info(time_zone_name)
+		update_time_zone(time_zone_name)
 	end
 
 	def update_time_zone(time_zone_name)
@@ -30,6 +30,12 @@ class Organizer
 		pretify_msgs(todos)
 	end
 
+	# view the reminders due now, doesn't change 'em
+	def check_msgs
+		todos = todo_msgs
+		pretify_msgs(todos)
+	end
+
 	def add_msg(msg, user_date_time, interval=nil)
 		utc_time = to_utc(to_date_time(user_date_time))
 		validate_future(utc_time) # TODO
@@ -40,11 +46,11 @@ class Organizer
 	end
 
 	# user-readable message list
-	# TODO: display the rank for deletion ease
 	def view_all_msgs_with_rank
 		add_rank(pretify_msgs(all_msgs))
 	end
 
+	# Redis is zero-indexed
 	def delete_by_rank(rank)
 		# TODO: validate within range
 		@rc.zremrangebyrank(@name, rank-1, rank-1)
@@ -81,6 +87,7 @@ private
 		end
 	end
 
+	# watch if interval == ""
 	def validate_interval(interval)
 		interval.downcase!
 		valid_intervals = %w[year month week day hour]
