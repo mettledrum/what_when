@@ -5,8 +5,8 @@ require 'redis'
 
 load 'organizer.rb'
 puts "Howd¥, setting up the Organizer."
-r = Redis.new
-@@org = Organizer.new(r, "myc1", "America/Denver")
+r = Redis.new(:host => ENV['REDIS_HOST'], :port => ENV['REDIS_PORT'])
+@@org = Organizer.new(r, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
 
 
 # instantiate the Organizer class
