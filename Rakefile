@@ -1,3 +1,4 @@
+require 'twilio-ruby'
 load "./lib/organizer.rb"
 
 # doesn't know of ENV vars :(
