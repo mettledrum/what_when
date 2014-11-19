@@ -1,4 +1,4 @@
-load "../lib/organizer.rb"
+load "./lib/organizer.rb"
 
 # doesn't know of ENV vars :(
 desc "checks the reminders in Redis through Organizer"
