@@ -9,7 +9,7 @@ load 'lib/organizer.rb'
 enable :sessions
 
 def start_organizer
-	r = Redis.new(:host => ENV['REDIS_HOST'], :port => ENV['REDIS_PORT'])
+	r = Redis.new(url: ENV['REDISTOGO_URL'])
 	@@org = Organizer.new(r, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
 end
 

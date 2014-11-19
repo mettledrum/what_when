@@ -4,8 +4,8 @@ load "../lib/organizer.rb"
 desc "checks the reminders in Redis through Organizer"
 task :check_update_text do
 	puts "checking, updating reminders"
-
-	red = Redis.new(:host => ENV['REDIS_HOST'], :port => ENV['REDIS_PORT'])
+	
+	red = Redis.new(url: ENV['REDISTOGO_URL'])
 	org = Organizer.new(red, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
 	todos = org.check_and_update_msgs
 
