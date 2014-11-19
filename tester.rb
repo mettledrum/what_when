@@ -1,4 +1,4 @@
-# run thess lines in irb to test the Organizer
+# run these lines in irb to test the Organizer
 
 load 'organizer.rb'
 

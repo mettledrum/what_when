@@ -1,0 +1,13 @@
+!!!
+%html
+	%head
+		%title using Organizer class
+	%body
+		= yield
+		%footer
+			%p
+				- if session[:verified]
+					%form{method: "POST", action: '/logout'}
+						%input{type: "submit", value: "logout" }
+
+			%p by Andrew

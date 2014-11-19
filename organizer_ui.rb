@@ -1,17 +1,44 @@
-require 'sinatra'
 require 'rubygems'
+require 'sinatra'
 require 'haml'
 require 'redis'
+require 'twilio-ruby'
 
-load 'organizer.rb'
-puts "Howd¥, setting up the Organizer."
-r = Redis.new(:host => ENV['REDIS_HOST'], :port => ENV['REDIS_PORT'])
-@@org = Organizer.new(r, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
+load 'lib/organizer.rb'
 
+enable :sessions
 
-# instantiate the Organizer class
-get '/' do
-	redirect to '/reminders' 
+def start_organizer
+	r = Redis.new(:host => ENV['REDIS_HOST'], :port => ENV['REDIS_PORT'])
+	@@org = Organizer.new(r, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
+end
+
+def verify_user
+	redirect to '/login' unless session[:verified] == true
+end
+
+start_organizer
+
+before /^(?!\/login)/ do
+	verify_user
+end
+
+get '/login' do
+	haml :login
+end
+
+post '/login' do
+	if params[:password] == ENV['THE_PASSWORD']
+		session[:verified] = true
+	end
+
+	verify_user
+	redirect to '/reminders'
+end
+
+post '/logout' do
+	session[:verified] = false
+	redirect to '/login'
 end
 
 # view reminders, make new ones
@@ -20,8 +47,7 @@ get '/reminders' do
 	haml :reminders
 end
 
-# adding a reminder
-post '/reminders' do
+post '/add_reminders' do
 	time = params[:time]
 	reminder = params[:reminder]
 	repeat = params[:repeat]
@@ -46,64 +72,3 @@ post '/delete_reminder' do
 
 	redirect to '/reminders'
 end
-
-# updates the reminders as well as shows them
-get '/update_reminders' do
-	@todos = @@org.check_and_update_msgs
-
-	haml :todo_now
-end
-
-__END__
-
-@@todo_now
-%p
-	here's what's due now:
-	- @todos.each do |td|
-		%li= td
-%p
-	GOTO
-	%a{href: '/reminders'} all reminders
-
-
-@@layout
-!!!
-%html
-	%head
-		%title using Organizer class
-	%body
-		= yield
-		%footer
-			%p by Andrew
-
-
-@@reminders
-%p
-	here's what's on your docket:
-	- @reminders.each.with_index do |r, idx|
-		%li
-			= r
-			%form{method: "POST", action: '/delete_reminder'}
-				%input{type: "text", name: "rank", value: "#{idx+1}", style: "display:none"}
-				%input{type: "submit", value: "X"}
-
-%p type your new reminders here:
-
-%form{method: "POST", action: '/reminders'}
-	%label{for: "time"} Time:
-	%input{type: "text", name: "time"}
-	%br
-	%label{for: "reminder"} Reminder:
-	%input{type: "text", name: "reminder"}
-	%br
-	%label{for: "repeat"} Repeat Every:
-	%input{type: "text", name: "repeat"}
-	%br
-	%input{type: "submit", value: "submit" }
-
-%p
-	GOTO
-	%a{href: '/todo_now'} look @ what is due
-	|
-	%a{href: '/update_reminders'} look @ what is due and update
-

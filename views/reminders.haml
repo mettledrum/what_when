@@ -1,0 +1,43 @@
+%p here's what's on your docket:
+%table
+	%tr
+		%th reminder
+		%th delete
+	- @reminders.each.with_index do |r, idx|
+		%tr
+			%td= r
+			%td	
+				%form{method: "POST", action: '/delete_reminder'}
+					%input{type: "text", name: "rank", value: "#{idx+1}", style: "display:none"}
+					%input{type: "submit", value: "X"}
+
+%p type a new reminder here:
+
+%form{method: "POST", action: '/add_reminders'}
+	%table
+		%tr
+			%th
+			%th
+		%tr
+			%td
+				%label{for: "time"} Time:
+			%td
+				%input{type: "text", name: "time"}
+		%tr
+			%td
+				%label{for: "reminder"} Reminder:
+			%td
+				%input{type: "text", name: "reminder"}
+		%tr
+			%td
+				%label{for: "repeat"} Repeat Every:
+			%td
+				%input{type: "text", name: "repeat"}
+		%tr
+			%td
+				%input{type: "submit", value: "submit" }
+			%td
+
+%p
+	links:
+	%a{href: '/todo_now'} look @ what is due
