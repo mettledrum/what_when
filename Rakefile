@@ -1,10 +1,10 @@
 require 'twilio-ruby'
 load "./lib/organizer.rb"
 
-# doesn't know of ENV vars :(
+# doesn't know of ENV vars locally :(
 desc "checks the reminders in Redis through Organizer"
 task :check_update_text do
-	puts "checking, updating reminders"
+	puts "*** checking, updating reminders ***"
 	
 	red = Redis.new(url: ENV['REDISTOGO_URL'])
 	org = Organizer.new(red, ENV['REMINDER_SET_NAME'], ENV['TIME_ZONE'])
@@ -13,9 +13,13 @@ task :check_update_text do
 	puts "Todos: "
 	puts todos
 
-	# POST to Twiml endpoint IF not ""
-	twiml = Twilio::TwiML::Response.new do |r|
-		r.Message "\n#{todos.join("\n")}"
-	end
-	twiml.text
+	twil = Twilio::REST::Client.new ENV['TWILIO_SID'], ENV['TWILIO_TOKEN']
+
+	twil.account.messages.create(
+		from: ENV['TWILIO_FROM_NUMBER'],
+		to:   ENV['TWILIO_TO_NUMBER']
+		body: "\n#{todos.join("\n")}"
+		)
+
+	puts "*** finished texting todos ***"
 end
