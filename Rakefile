@@ -17,7 +17,7 @@ task :check_update_text do
 
 	twil.account.messages.create(
 		from: ENV['TWILIO_FROM_NUMBER'],
-		to:   ENV['TWILIO_TO_NUMBER']
+		to:   ENV['TWILIO_TO_NUMBER'],
 		body: "\n#{todos.join("\n")}"
 		)
 
