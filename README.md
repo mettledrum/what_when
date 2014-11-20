@@ -13,5 +13,6 @@ todo
 - ~~allow users to toggle recurrences~~
 - ~~allow users to delete the reminders~~ can now delete by rank
 - add tests _or die_!
-- make month repetition account for different month days
-- add user authentication on an endpoint
+- make month repetition actually account for different month days
+- ~~add user authentication on an endpoint~~
+- allow multiple users to sign in and have their own organisers
