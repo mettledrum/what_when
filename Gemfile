@@ -9,3 +9,7 @@ gem 'haml'
 gem 'rake'
 gem 'httparty'
 gem 'twilio-ruby'
+
+group :development, :test do
+	gem 'rspec'	
+end
